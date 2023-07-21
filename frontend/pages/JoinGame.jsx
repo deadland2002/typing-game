@@ -19,8 +19,8 @@ const StartGame = ({Start,Players}) => {
       Start();
   }
 return (
-  <div>
-      <span>StartGame</span>
+  <div className="Start_Game">
+      <span>StartGame :</span>
       <button onClick={HandleStart}>Start</button>
   </div>
 )
@@ -60,7 +60,7 @@ const CountDown = ({ setCompleted }) => {
     }
   }, [timer]);
 
-  return <div>Game will start in {timer}</div>;
+  return <div className="countdown">Game will start in <span className="timer">{timer}</span></div>;
 };
 
 
@@ -85,7 +85,7 @@ const TypeArea = () => {
 
 
   const [intervalState, setIntervalState] = useState();
-  const [timer, setTimer] = useState(10);
+  const [timer, setTimer] = useState(60);
   const [start, setStart] = useState(false);
 
   let ques = structuredClone(questions);
@@ -122,7 +122,7 @@ const TypeArea = () => {
     // console.log("Question");
     let question;
 
-    let max = 5;
+    let max = 14;
     let randomNumber;
 
     do {
@@ -350,9 +350,19 @@ const JoinGame = () => {
     setMount(<EndGame players={player_list} />)
   }
 
+  const HandleCopy = () =>{
+    navigator.clipboard.writeText(id);
+    alert("copied");
+  }
+
   return (
     <div className="Join_Game">
       <span className="title">Multi Player</span>
+      <div className="room_id">
+      <span>Room Id : {id} </span>
+      <span onClick={HandleCopy}>copy</span>
+      </div>
+
 
       <div className="wrapper">
         <div className="player_holder_parent">

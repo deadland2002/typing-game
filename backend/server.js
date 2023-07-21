@@ -17,7 +17,7 @@ const io = new Server(server, {
 
 
 app.use(cors());
-app.use(express.static("../client/dist"));
+app.use(express.static("../frontend/dist"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -117,6 +117,15 @@ io.on("connection", (socket) => {
     io.to("room_"+room_id).emit("player_list",player_list);
   })
 });
+
+
+
+
+
+
+app.get("/",(req,res)=>{
+  res.sendFile(__dirname+"../frontend/dist") ;
+})
 
 
 

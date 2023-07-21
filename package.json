@@ -1,0 +1,17 @@
+{
+  "name": "typing-game",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install_client" : "cd frontend && npm i",
+    "install_server" : "cd backend && npm i",
+    "install_all" : "npm run install_client && npm run install_server" ,
+    "build":"cd frontend && npm run build",
+    "start":"cd backend && npm start" ,
+    "oneshot" : "npm run install_all && npm run build && npm run start"
+  },
+  "author": "",
+  "license": "ISC"
+}
