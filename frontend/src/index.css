@@ -1,0 +1,305 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
+
+a,
+a:active,
+a:visited {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  font-family: Poppins;
+  color: white;
+}
+
+body {
+  background-color: rgb(20, 20, 20);
+}
+
+:root {
+}
+
+.home_parent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100%;
+  flex-direction: column;
+  gap: 50px;
+}
+
+.home_parent div {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.home_parent span {
+  &:nth-child(1) {
+    font-size: 42px;
+    font-weight: 700;
+  }
+  &:nth-child(2) {
+    font-size: 24px;
+  }
+}
+
+.home_parent a {
+  font-size: 20px;
+  border-radius: 20px;
+  background-color: rgb(12, 45, 71);
+  padding: 5px 15px;
+  cursor: pointer;
+}
+
+.Single_Player {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  padding: 0px 20px;
+
+  .difficulity_Selector {
+    display: flex;
+    align-items: center;
+    font-size: 24px;
+    gap: 10px;
+  }
+
+  .timer{
+    position: absolute;
+    right: 20px;
+    top: 20px;
+  }
+
+  .difficulity_Selector button {
+    padding: 5px 10px;
+    border-radius: 20px;
+    border: 0;
+    cursor: pointer;
+    background-color: rgb(1, 56, 56);
+  }
+
+  .Question_Mount {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    position: absolute;
+    top: 65.5px;
+    width: calc(100% - 40px);
+    left: 19.5px;
+    & span{
+        color: gray;
+        pointer-events: none;
+        cursor: default;
+        user-select: none;
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: 0.15rem;
+    }
+    .correct {
+      color: green;
+    }
+    .incorrect {
+      color: red;
+    }
+    .current{
+      color: white;
+    }
+  }
+  .Input_component {
+    width: 100%;
+      & textarea{
+          background-color: transparent;
+          outline: none;
+          border: 0;
+          width: 100%;
+          font-size: 20px;
+          font-family: Poppins;
+          height: 90vh;
+          letter-spacing: 0.133rem;
+          word-spacing: 4px;
+          font-weight: 700;
+          color: rgba(255, 255, 255, 0);
+          caret-color: #ffffff;
+          line-height: 40.5px;
+    }
+  }
+}
+
+.Single_Player .title {
+  width: fit-content;
+  font-size: 34px;
+}
+
+
+
+
+
+
+
+
+.Multi_Player {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  padding: 0px 20px;  
+
+  .room_options{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 20px;
+    padding-top: 50px;
+    & button{
+      background-color: rgb(0, 7, 88);
+      padding: 5px 10px;
+      border: 0;
+      border-radius: 20px;
+      font-size: 20px;
+    }
+  }
+}
+
+.Multi_Player .title {
+  width: fit-content;
+  font-size: 34px;
+}
+
+
+.Join_Game{
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  .title{
+    display: flex;
+    justify-content: center;
+    font-size: 34px;
+  }
+  .wrapper{
+    display: flex;
+    padding: 10px;
+    gap: 15px;
+    .player_holder_parent{
+      display: flex;
+      padding: 10px;
+      flex-direction: column;
+      border: 2px solid white;
+      min-height: 85vh;
+      min-width: 150px;
+      .heading{
+        font-size: 20px;
+        font-weight: 700;
+      }
+      .player_holder{
+        display: flex;
+        flex-direction: column;
+        .name_Wrapper{
+          display: flex;
+          justify-content: space-between;
+        }
+      }
+    }
+
+
+    .Game_Area{
+      display: flex;
+      width: 100%;
+      min-height: 85vh;
+      border: 2px solid white;
+
+      .timer_type{
+        position: absolute;
+        right: 20px;
+        top: 20px;
+      }
+
+      .Game_Over_Parent{
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 20px;
+        .Game_header{
+          font-size: 32px;
+          display: flex;
+          flex-direction: column;
+          .header{
+            font-size: 34px;
+            text-align: center;
+          }
+          & div{
+            display: flex;
+            gap: 20px;
+            & span:nth-child(2){
+              color: yellow;
+            }
+          }
+        }
+
+        .score_wrapper{
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          padding-top: 20px;
+          .name_Wrapper{
+            display: flex;
+            width: 200px;
+            justify-content: space-between;
+            border-bottom: 2px dashed white;
+          }
+        }
+      }
+
+      .Type_Area{
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        width: 100%;
+        .Question_Mount{
+          position: absolute;
+          width: 100%;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 5.15px;
+          z-index: 10;
+          & span{
+            color: gray;
+            font-size: 1.2rem;
+          }
+          .correct{
+            color: green;
+          }
+          .current {
+            color: white;
+          }
+          .incorrect{
+            color: red;
+          }
+        }
+
+        .Input_component{
+          & textarea{
+            width: 100%;
+            min-height: 85vh;
+            background-color: transparent;
+            font-size: 1.2rem;
+            line-height: 31px;
+            color: transparent;
+            caret-color: white;
+          }
+        }
+      }
+    }
+  }
+}
