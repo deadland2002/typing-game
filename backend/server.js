@@ -91,7 +91,14 @@ io.on("connection", (socket) => {
   socket.on("Start Game",(args)=>{
     console.log("pinged backend start")
     console.log(directory[socket.id].room)
-      io.to("room_"+directory[socket.id].room).emit("begin game")
+
+    let max = 14;
+    let randomNumber;
+    const random = Math.random();
+    const scaledRandom = random * (max - 0 + 1);
+    randomNumber = Math.floor(scaledRandom) + 0;
+
+    io.to("room_"+directory[socket.id].room).emit("begin game",randomNumber)
   })
   
   

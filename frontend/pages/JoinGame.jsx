@@ -78,7 +78,7 @@ const CountDown = ({ setCompleted }) => {
 
 
 
-const TypeArea = () => {
+const TypeArea = ({questionNumber}) => {
   const [currWord, setCurrWord] = useState(0);
   const [started, setStarted] = useState(false);
   const [questions, setQuestion] = useState([]);
@@ -120,18 +120,7 @@ const TypeArea = () => {
 
   const HandleSetQuestion = () => {
     // console.log("Question");
-    let question;
-
-    let max = 14;
-    let randomNumber;
-
-    do {
-      const random = Math.random();
-      const scaledRandom = random * (max - 0 + 1);
-      randomNumber = Math.floor(scaledRandom) + 0;
-
-      question = Paragraph[randomNumber];
-    } while (!question);
+    let question = Paragraph[questionNumber];
 
     // console.log(randomNumber);
     // console.log(question);
@@ -298,6 +287,7 @@ const JoinGame = () => {
   const [players, setPlayers] = useState({});
   const [id, setID] = useState(ID.split(":")[0]);
   const [countDownCompleted, setCountdownCompleted] = useState(false);
+  const [randomNumber , setRandomNumber] = useState(0)
 
   useEffect(() => {
     socket.connect();
@@ -309,6 +299,7 @@ const JoinGame = () => {
     });
     
     socket.on("begin game", (value) => {
+      setRandomNumber(value);
       HandleStart();
       console.log("pinged handle start")
     });
@@ -327,17 +318,11 @@ const JoinGame = () => {
   const HandleStart = () => {
     console.log(Object.keys(players).length)
     console.log(players);
-    
-    // if (Object.keys(players).length <= 1) {
-    //   alert("need at least 2 players");
-    //   return;
-    // }
-
     setMount(<CountDown setCompleted={HandleCompletedCountdown} />);
   };
 
   const HandleCompletedCountdown = () => {
-    setMount(<TypeArea />);
+    setMount(<TypeArea questionNumber={randomNumber} />);
   };
 
   const [mount, setMount] = useState(
