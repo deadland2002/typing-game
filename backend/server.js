@@ -8,7 +8,7 @@ const cors = require("cors");
 
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173", // Specify the allowed origin
+    origin: "*", // Specify the allowed origin
     methods: ["GET", "POST"], // Specify the allowed HTTP methods
     allowedHeaders: ["Access-Control-Allow-Origin"], // Specify the allowed headers
     credentials: true, // Enable CORS credentials
@@ -36,16 +36,46 @@ function HandleJoinRoom(SocketId , RoomId , Name){
     name : Name
   }
 
-  if(rooms[RoomId]){
-    rooms[RoomId][SocketId] = {
-      Name : Name,
+  if(rooms[RoomId] && rooms[RoomId].Players){
+    const adminSocket = Object.keys(rooms[RoomId].Admin)[0];
+    console.log('replace data ',adminSocket , SocketId)
+
+    rooms[RoomId].Players[SocketId] = {
+      Name : adminSocket === SocketId ? `${Name}(ADMIN)` : Name ,
       Points : 0
     }
   }else{
-    rooms[RoomId] = {
+    rooms[RoomId]={
+      Players:{
+        [SocketId] : {
+          Name : `${Name}(ADMIN)` ,
+          Points : 0
+        }
+      },
+      Admin:{
+        [SocketId] : {
+          Name : Name ,
+        }
+      }
+    }
+  }
+
+}
+
+
+
+
+
+function HandleCreateRoom(SocketId , RoomId , Name){
+  directory[SocketId] = {
+    room : RoomId,
+    name : Name
+  }
+
+  rooms[RoomId] = {
+    Admin:{
       [SocketId] : {
         Name : Name ,
-        Points : 0
       }
     }
   }
@@ -60,27 +90,39 @@ io.on("connection", (socket) => {
     HandleJoinRoom(socket.id , args[0] , args[1])
     socket.join("room_"+args[0])
 
-    let player_list = structuredClone(rooms[args[0]]);
+    let player_list = structuredClone(rooms[args[0]].Players);
     // delete player_list[socket.id]
     
     
     io.to("room_"+args[0]).emit("player_list",player_list);
     
-    console.log(rooms)
+    console.log("rooms",JSON.stringify(rooms))
+  })
+
+
+
+  socket.on("room create",async (args)=>{
+    const {roomId,name} = args;
+    HandleCreateRoom(socket.id , roomId , name)
+    console.log("room-create",args)
   })
 
   socket.on("disconnect", () => {
     if(directory[socket.id] && rooms[directory[socket.id].room]){
-
-      delete rooms[directory[socket.id].room][socket.id]
+      delete rooms[directory[socket.id].room].Players[socket.id]
     }
-   
-    console.log("a user disconnected",directory[socket.id]);
-    socket.leave("room_"+directory[socket.id]?.room)
 
-    let player_list = structuredClone(rooms[directory[socket.id]?.room]);
+    const roomId = directory[socket.id].room;
 
-    io.to("room_"+directory[socket.id]?.room).emit("player_list",player_list);
+    console.log("a user disconnected");
+    console.log(directory[socket.id]);
+    console.log(rooms[roomId].Players);
+
+    socket.leave("room_"+roomId)
+
+    let player_list = structuredClone(rooms[roomId].Players);
+
+    io.to("room_"+roomId).emit("player_list",player_list);
 
     console.log(player_list)
     
@@ -91,6 +133,15 @@ io.on("connection", (socket) => {
   socket.on("Start Game",(args)=>{
     console.log("pinged backend start")
     console.log(directory[socket.id].room)
+
+    const roomId = directory[socket.id].room;
+    const AdminSocket = Object.keys(rooms[roomId].Admin)[0]
+    // if(socket.id === )
+
+    console.log("Start Game",rooms[roomId])
+    if(socket.id !== AdminSocket){
+      return;
+    }
 
     let max = 14;
     let randomNumber;
@@ -106,7 +157,7 @@ io.on("connection", (socket) => {
   socket.on("Game Over",(args)=>{
     console.log("pinged backend over")
     let room_id = directory[socket.id].room;
-    let player_list = structuredClone(rooms[room_id]);
+    let player_list = structuredClone(rooms[room_id].Players);
       io.to("room_"+directory[socket.id].room).emit("game end",player_list)
   })
   
@@ -116,12 +167,15 @@ io.on("connection", (socket) => {
   socket.on("correct answers",(score)=>{
     console.log("pinged backend score")
     let room_id = directory[socket.id].room;
-    rooms[room_id][socket.id].Points = score;
-    let player_list = structuredClone(rooms[room_id]);
-    
-    console.log(player_list);
+    rooms[room_id].Players[socket.id].Points = score;
+    let player_list = structuredClone(rooms[room_id].Players);
+    let admin = structuredClone(rooms[room_id].Admin);
+
+    console.log("correct answers",player_list);
     
     io.to("room_"+room_id).emit("player_list",player_list);
+    io.to("room_"+room_id).emit("admin",admin);
+
   })
 });
 
@@ -136,6 +190,6 @@ app.get("/",(req,res)=>{
 
 
 
-server.listen(3000, () => {
+server.listen(3000, "0.0.0.0",() => {
   console.log("listening on *:3000");
 });

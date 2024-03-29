@@ -5,7 +5,7 @@ import {useNavigate} from "react-router-dom"
 const Multiplayer = () => {
   const navigate = useNavigate();
 
-  const HandleCreate = () => {
+  const HandleCreate = async () => {
     const charset =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     let randomString = "";
@@ -16,13 +16,17 @@ const Multiplayer = () => {
       randomString += charset[randomIndex];
     }
 
-    let name = prompt("Name : "); 
+    let name = prompt("Name : ");
+
+    await socket.connect()
+    await socket.emit("room create", {roomId:randomString,name:name});
     navigate("/multiplayer/join/"+randomString+":"+name);
   };
   
-  const HandleJoin = () =>{
+  const HandleJoin = async () =>{
       let roomId = prompt("RoomId : ");
       let name = prompt("Name : ");
+
       navigate("/multiplayer/join/"+roomId+":"+name);
   }
 

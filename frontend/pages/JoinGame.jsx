@@ -13,10 +13,14 @@ import Paragraph from "../data/Paragraph.json";
 
 const StartGame = ({Start,Players}) => {
 
+  useEffect(() => {
+    socket.on("begin game",()=>{
+      Start();
+    })
+  }, [Start]);
+
   const HandleStart = () =>{
       socket.emit("Start Game");
-
-      Start();
   }
 return (
   <div className="Start_Game">
@@ -119,7 +123,7 @@ const TypeArea = ({questionNumber}) => {
 
 
   const HandleSetQuestion = () => {
-    // console.log("Question");
+    console.log("Question",questionNumber);
     let question = Paragraph[questionNumber];
 
     // console.log(randomNumber);
@@ -301,7 +305,7 @@ const JoinGame = () => {
     socket.on("begin game", (value) => {
       setRandomNumber(value);
       HandleStart();
-      console.log("pinged handle start")
+      console.log("pinged handle start",value)
     });
     
     
@@ -322,7 +326,8 @@ const JoinGame = () => {
   };
 
   const HandleCompletedCountdown = () => {
-    setMount(<TypeArea questionNumber={randomNumber} />);
+    const randomQuestionIndex = Math.min(Math.floor(Math.random() * Paragraph.length) , Paragraph.length - 1);
+    setMount(<TypeArea questionNumber={randomQuestionIndex} />);
   };
 
   const [mount, setMount] = useState(
