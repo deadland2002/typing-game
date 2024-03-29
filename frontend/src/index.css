@@ -249,6 +249,7 @@ body {
       min-height: 85vh;
       border: 2px solid rgb(131, 131, 131);
       border-radius: 10px;
+      padding: 20px 10px;
 
       .timer_type{
         position: absolute;
@@ -300,9 +301,10 @@ body {
         width: 100%;
         .Question_Mount{
           position: absolute;
-          left: 10px;
+          left: 0px;
           width: 100%;
           display: flex;
+          align-items: flex-end;
           flex-wrap: wrap;
           gap: 5.15px;
           z-index: 10;
@@ -323,14 +325,16 @@ body {
 
         .Input_component{
           & textarea{
-            padding-left: 10px;
+            padding-left: 0;
+            outline: 0;
             width: 100%;
             min-height: 85vh;
             background-color: transparent;
             font-size: 1.2rem;
-            line-height: 31px;
+            line-height: 48.5px;
             color: transparent;
             caret-color: white;
+            border: 0;
           }
         }
       }
