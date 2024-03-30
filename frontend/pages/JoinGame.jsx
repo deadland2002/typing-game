@@ -90,7 +90,7 @@ const TypeArea = ({questionNumber}) => {
 
 
   const [intervalState, setIntervalState] = useState();
-    const [timer, setTimer] = useState(10);
+    const [timer, setTimer] = useState(180);
   const [start, setStart] = useState(false);
 
   let ques = structuredClone(questions);
@@ -273,7 +273,11 @@ const TypeArea = ({questionNumber}) => {
           })}
         </label>
         <div className="Input_component">
-          <textarea id="input_text" type="text" onChange={HandleChange} onKeyDown={HandleKeyDown} />
+          <textarea data-gramm="false"
+                    data-gramm_editor="false"
+                    data-enable-grammarly="false"
+                    id="input_text" type="text"
+                    onChange={HandleChange} onKeyDown={HandleKeyDown} />
         </div>
       </div>
     </>
@@ -323,15 +327,13 @@ const EndGame = ({players,name}) =>{
           
         {players_array.map((single, index) => {
           return (
-            <>
-              <div className="name_Wrapper">
+              <div className="name_Wrapper" key={`player_${index+1}`}>
                 <span key={`player_${index}`}>{single.Name}</span>
                 <span key={`score_${index}`}>{single.Points}</span>
               </div>
-            </>
           );
         })}
-        
+
         </div>
       </div>
     </>
@@ -345,13 +347,6 @@ EndGame.propTypes = {
 }
 
 
-
-
-
-
-
-
-
 const JoinGame = () => {
   const { ID } = useParams();
   const [name, setName] = useState(ID.split(":")[1]);
@@ -360,6 +355,7 @@ const JoinGame = () => {
   const [id, setID] = useState(ID.split(":")[0]);
   const [countDownCompleted, setCountdownCompleted] = useState(false);
   const [randomNumber , setRandomNumber] = useState(0)
+  const [mount, setMount] = useState();
 
   useEffect(() => {
     socket.connect();
@@ -383,6 +379,8 @@ const JoinGame = () => {
 
     socket.on("receive user", (value) => {
       if(value && value.length >= 1){
+        if(value.includes("(ADMIN)"))
+          setMount(<StartGame Start={HandleStart} Players={players} />);
         setNameSocket(value)
       }
       console.log("receive user",value)
@@ -409,11 +407,6 @@ const JoinGame = () => {
     const randomQuestionIndex = Math.min(Math.floor(Math.random() * Paragraph.length) , Paragraph.length - 1);
     setMount(<TypeArea questionNumber={randomQuestionIndex} />);
   };
-
-  const [mount, setMount] = useState(
-    <StartGame Start={HandleStart} Players={players} />
-  );
-
 
   const HandleEnd = (player_list) =>{
     console.log(player_list)
@@ -451,16 +444,14 @@ const JoinGame = () => {
 
       <div className="wrapper">
         <div className="player_holder_parent">
-          <span className="heading">Players</span>
+          <span className="heading text-center border-b-2 pb-2 border-amber-400">Players</span>
           <div className="player_holder">
             {Object.keys(players).map((single, index) => {
               return (
-                <>
-                  <div className="name_Wrapper">
+                  <div className="name_Wrapper border-b-2 border-gray-700 py-2" key={`players_name_${index+1}`}>
                     <span key={`player_${index}`}>{players[single].Name}</span>
                     <span key={`score_${index}`}>{players[single].Points}</span>
                   </div>
-                </>
               );
             })}
           </div>

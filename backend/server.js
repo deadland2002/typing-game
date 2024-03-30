@@ -41,14 +41,14 @@ function HandleJoinRoom(SocketId , RoomId , Name){
     console.log('replace data ',adminSocket , SocketId)
 
     rooms[RoomId].Players[SocketId] = {
-      Name : adminSocket === SocketId ? `${Name}(ADMIN)` : Name.replaceAll("(ADMIN)","") ,
+      Name : adminSocket === SocketId ? `${Name} (ADMIN)` : Name.replaceAll("(ADMIN)","") ,
       Points : 0
     }
   }else{
     rooms[RoomId]={
       Players:{
         [SocketId] : {
-          Name : `${Name}(ADMIN)` ,
+          Name : `${Name} (ADMIN)` ,
           Points : 0
         }
       },
