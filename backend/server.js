@@ -24,7 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 
 
 app.get("/", (req, res) => {
-  res.send("hi");
+  res.sendFile("../frontend/dist/index.html");
 });
 
 var rooms = {}
