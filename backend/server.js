@@ -221,7 +221,7 @@ Object.keys(networkInterfaces).forEach(interfaceName => {
 });
 
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 80;
 server.listen(PORT, "0.0.0.0",() => {
   console.log("server listening on");
   console.log(`http://${ipAddress}:${PORT}`);
