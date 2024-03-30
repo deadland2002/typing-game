@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useReducer, useState } from "react";
 import { useParams } from "react-router-dom";
 import { socket } from "../src/socket";
 import Paragraph from "../data/Paragraph.json";
+import PropTypes from "prop-types";
 
 
 
@@ -89,7 +90,7 @@ const TypeArea = ({questionNumber}) => {
 
 
   const [intervalState, setIntervalState] = useState();
-    const [timer, setTimer] = useState(180);
+    const [timer, setTimer] = useState(10);
   const [start, setStart] = useState(false);
 
   let ques = structuredClone(questions);
@@ -122,22 +123,27 @@ const TypeArea = ({questionNumber}) => {
   const HandleKeyDown = (event) => {
     switch (event.key) {
       case "ArrowUp":
-        console.log("Up arrow key pressed");
+        // console.log("Up arrow key pressed");
         event.preventDefault(); // Prevent default action (like scrolling)
         event.stopPropagation();
         break;
       case "ArrowDown":
-        console.log("Down arrow key pressed");
+        // console.log("Down arrow key pressed");
         event.preventDefault(); // Prevent default action (like scrolling)
         event.stopPropagation();
         break;
       case "ArrowLeft":
-        console.log("Left arrow key pressed");
+        // console.log("Left arrow key pressed");
         event.preventDefault(); // Prevent default action (like scrolling)
         event.stopPropagation();
         break;
       case "ArrowRight":
-        console.log("Right arrow key pressed");
+        // console.log("Right arrow key pressed");
+        event.preventDefault(); // Prevent default action (like scrolling)
+        event.stopPropagation();
+        break;
+      case "Enter":
+        // console.log("Enter key pressed");
         event.preventDefault(); // Prevent default action (like scrolling)
         event.stopPropagation();
         break;
@@ -148,7 +154,7 @@ const TypeArea = ({questionNumber}) => {
 
 
   const HandleSetQuestion = () => {
-    console.log("Question",questionNumber);
+    // console.log("Question",questionNumber);
     let question = Paragraph[questionNumber];
 
     // console.log(randomNumber);
@@ -170,7 +176,7 @@ const TypeArea = ({questionNumber}) => {
 
   const HandleChange = async (e) => {
 
-    console.log(e.key)
+    // console.log(e.key)
 
     const { value } = e.target;
 
@@ -181,7 +187,7 @@ const TypeArea = ({questionNumber}) => {
 
     let words = value.split(" ");
 
-    console.log(words)
+    // console.log(words)
 
     const ques = structuredClone(questions);
 
@@ -209,7 +215,7 @@ const TypeArea = ({questionNumber}) => {
       if (ques[words.length] && ques[words.length][1] === "current") {
         ques[words.length ][1] = "normal";
       }
-      console.log("called later",ques[words.length - 1])
+      // console.log("called later",ques[words.length - 1])
       setQuestion(ques)
     }
 
@@ -234,7 +240,7 @@ const TypeArea = ({questionNumber}) => {
 
     socket.emit("correct answers",correct_answers)
 
-    console.log(correct_answers);
+    // console.log(correct_answers);
   }
   return (
     <>
@@ -283,9 +289,15 @@ const TypeArea = ({questionNumber}) => {
 
 
 
-const EndGame = ({players}) =>{
+const EndGame = ({players,name}) =>{
   const [players_array , setPlayers] = useState([]);
   const [winner , setWinner] = useState("");
+
+  const HandleReset = () =>{
+    socket.emit("Start Game");
+  }
+
+  console.log("got name as",name)
   useEffect(()=>{
     let array = Object.keys(players).map((single)=>{
       return players[single]
@@ -297,15 +309,18 @@ const EndGame = ({players}) =>{
 
     setWinner(sorted[0])
     setPlayers(sorted)
-    console.log(sorted)
+    // console.log(sorted)
   },[])
   return (
     <>
       <div className="Game_Over_Parent">
         <div className="Game_header">
-          <div>
+          <div className={`flex items-center`}>
             <span>Winner</span>
             <span>{winner.Name}</span>
+            {
+                name.includes("(ADMIN)") && <span className="text-sm bg-gray-800 p-2 rounded-md cursor-pointer" onClick={HandleReset}>Reset</span>
+            }
           </div>
 
           <span className="header">Scores</span>
@@ -331,7 +346,10 @@ const EndGame = ({players}) =>{
 }
 
 
-
+EndGame.propTypes = {
+  players: PropTypes.object.isRequired,
+  name: PropTypes.string.isRequired
+}
 
 
 
@@ -344,6 +362,7 @@ const EndGame = ({players}) =>{
 const JoinGame = () => {
   const { ID } = useParams();
   const [name, setName] = useState(ID.split(":")[1]);
+  const [nameSocket, setNameSocket] = useState("");
   const [players, setPlayers] = useState({});
   const [id, setID] = useState(ID.split(":")[0]);
   const [countDownCompleted, setCountdownCompleted] = useState(false);
@@ -351,24 +370,36 @@ const JoinGame = () => {
 
   useEffect(() => {
     socket.connect();
+
     socket.emit("join room", ID.split(":"));
+
+    socket.emit("get User");
 
     socket.on("player_list", (value) => {
       setPlayers(structuredClone(value));
-      console.log(value);
+      // console.log(value);
     });
     
     socket.on("begin game", (value) => {
       setRandomNumber(value);
       HandleStart();
-      console.log("pinged handle start",value)
+      // console.log("pinged handle start",value)
+    });
+
+
+
+    socket.on("receive user", (value) => {
+      if(value && value.length >= 1){
+        setNameSocket(value)
+      }
+      console.log("receive user",value)
     });
     
     
     
     socket.on("game end", (value) => {
       HandleEnd(value);
-      console.log("pinged handle end")
+      // console.log("pinged handle end")
     });
 
   }, [name]);
@@ -376,8 +407,8 @@ const JoinGame = () => {
   useEffect(() => {}, [countDownCompleted]);
 
   const HandleStart = () => {
-    console.log(Object.keys(players).length)
-    console.log(players);
+    // console.log(Object.keys(players).length)
+    // console.log(players);
     setMount(<CountDown setCompleted={HandleCompletedCountdown} />);
   };
 
@@ -392,8 +423,8 @@ const JoinGame = () => {
 
 
   const HandleEnd = (player_list) =>{
-    console.log(player_list);
-    setMount(<EndGame players={player_list} />)
+    console.log(player_list)
+    setMount(<EndGame players={player_list} name={nameSocket} />)
   }
 
   const HandleCopy = () =>{
@@ -404,9 +435,12 @@ const JoinGame = () => {
   return (
     <div className="Join_Game">
       <span className="title">Multi Player</span>
-      <div className="room_id">
-      <span>Room Id : {id} </span>
-      <span onClick={HandleCopy}>copy</span>
+      <div className="room_id flex items-center gap-2">
+        <span className={`text-yellow-400`}>{nameSocket}</span>
+        <div>
+          <span>Room Id : {id} </span>
+          <span onClick={HandleCopy}>copy</span>
+        </div>
       </div>
 
 

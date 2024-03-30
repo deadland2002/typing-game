@@ -41,7 +41,7 @@ function HandleJoinRoom(SocketId , RoomId , Name){
     console.log('replace data ',adminSocket , SocketId)
 
     rooms[RoomId].Players[SocketId] = {
-      Name : adminSocket === SocketId ? `${Name}(ADMIN)` : Name ,
+      Name : adminSocket === SocketId ? `${Name}(ADMIN)` : Name.replaceAll("(ADMIN)","") ,
       Points : 0
     }
   }else{
@@ -105,6 +105,20 @@ io.on("connection", (socket) => {
     const {roomId,name} = args;
     HandleCreateRoom(socket.id , roomId , name)
     console.log("room-create",args)
+  })
+
+
+
+  socket.on("get User",async ()=>{
+    const roomId = directory[socket.id].room;
+
+    console.log(rooms[directory[socket.id].room].Players)
+
+    const name = rooms[directory[socket.id].room].Players[socket.id].Name
+
+    socket.emit("receive user",name)
+
+    console.log("get User",roomId,name)
   })
 
   socket.on("disconnect", () => {
