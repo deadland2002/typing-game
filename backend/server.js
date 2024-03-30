@@ -4,7 +4,11 @@ const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const cors = require("cors");
+const os = require('os');
+const dotenv = require("dotenv")
 
+
+dotenv.config();
 
 const io = new Server(server, {
   cors: {
@@ -204,6 +208,21 @@ app.get("/",(req,res)=>{
 
 
 
-server.listen(3000, "0.0.0.0",() => {
-  console.log("listening on *:3000");
+
+// Get the local IP address of the system
+const networkInterfaces = os.networkInterfaces();
+let ipAddress = '';
+Object.keys(networkInterfaces).forEach(interfaceName => {
+  networkInterfaces[interfaceName].forEach(networkInterface => {
+    if (networkInterface.family === 'IPv4' && !networkInterface.internal) {
+      ipAddress = networkInterface.address;
+    }
+  });
+});
+
+
+const PORT = process.env.PORT;
+server.listen(PORT, "0.0.0.0",() => {
+  console.log("server listening on");
+  console.log(`http://${ipAddress}:${PORT}`);
 });
