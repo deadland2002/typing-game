@@ -293,10 +293,6 @@ const EndGame = ({players,name}) =>{
   const [players_array , setPlayers] = useState([]);
   const [winner , setWinner] = useState("");
 
-  const HandleReset = () =>{
-    socket.emit("Start Game");
-  }
-
   console.log("got name as",name)
   useEffect(()=>{
     let array = Object.keys(players).map((single)=>{
@@ -318,9 +314,6 @@ const EndGame = ({players,name}) =>{
           <div className={`flex items-center`}>
             <span>Winner</span>
             <span>{winner.Name}</span>
-            {
-                name.includes("(ADMIN)") && <span className="text-sm bg-gray-800 p-2 rounded-md cursor-pointer" onClick={HandleReset}>Reset</span>
-            }
           </div>
 
           <span className="header">Scores</span>
@@ -432,14 +425,26 @@ const JoinGame = () => {
     alert("copied");
   }
 
+  const HandleReset = () =>{
+    socket.emit("Start Game");
+  }
+
   return (
     <div className="Join_Game">
       <span className="title">Multi Player</span>
-      <div className="room_id flex items-center gap-2">
-        <span className={`text-yellow-400`}>{nameSocket}</span>
+      <div className="room_id flex items-center gap-2 justify-between w-full py-2 px-3">
+        <div className={`flex gap-2 w-full`}>
+          <span className={`text-yellow-400`}>{nameSocket}</span>
+          <div>
+            <span>Room Id : {id} </span>
+            <span onClick={HandleCopy}>copy</span>
+          </div>
+        </div>
         <div>
-          <span>Room Id : {id} </span>
-          <span onClick={HandleCopy}>copy</span>
+          {
+              nameSocket.includes("(ADMIN)") &&
+              <span className="text-sm bg-gray-800 p-2 rounded-md cursor-pointer" onClick={HandleReset}>Reset</span>
+          }
         </div>
       </div>
 
