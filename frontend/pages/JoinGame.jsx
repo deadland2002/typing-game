@@ -1,15 +1,8 @@
-import React, { useEffect, useMemo, useReducer, useState } from "react";
-import { useParams } from "react-router-dom";
-import { socket } from "../src/socket";
+import React, {useEffect, useMemo, useState} from "react";
+import {useParams} from "react-router-dom";
+import {socket} from "../src/socket";
 import Paragraph from "../data/Paragraph.json";
 import PropTypes from "prop-types";
-
-
-
-
-
-
-
 
 
 const StartGame = ({Start,Players}) => {
@@ -44,7 +37,7 @@ return (
 
 const CountDown = ({ setCompleted }) => {
   const [intervalState, setIntervalState] = useState();
-  const [timer, setTimer] = useState(10);
+  const [timer, setTimer] = useState(2);
   const [start, setStart] = useState(false);
 
   useMemo(() => {
@@ -87,6 +80,8 @@ const TypeArea = ({questionNumber}) => {
   const [currWord, setCurrWord] = useState(0);
   const [started, setStarted] = useState(false);
   const [questions, setQuestion] = useState([]);
+  const [isAdminMode,setIsAdminMode] = useState(false);
+  const [originalParagraph,setOriginalParagraph] = useState("");
 
 
   const [intervalState, setIntervalState] = useState();
@@ -97,6 +92,34 @@ const TypeArea = ({questionNumber}) => {
 
   useEffect(() => {
     HandleSetQuestion();
+
+      const words = ["a","d","m","i","n","m","o","d","e"];
+      let currWord = [];
+      let isLocalAdmin = false;
+    const HandleAdmin = (e) =>{
+      if(isAdminMode || isLocalAdmin)
+          return true;
+
+      if(currWord.length >= words.length){
+        currWord = [];
+      }else{
+        currWord.push(e.key);
+      }
+
+      if (JSON.stringify(currWord)===JSON.stringify(words)){
+        alert("admin activated");
+        setIsAdminMode(true);
+        isLocalAdmin = true;
+        currWord = [];
+      }
+
+      console.log(currWord)
+    }
+
+    document.addEventListener("keydown",HandleAdmin);
+    return ()=>{
+      document.removeEventListener("keydown",HandleAdmin)
+    }
   }, []);
 
 
@@ -170,7 +193,7 @@ const TypeArea = ({questionNumber}) => {
     }
 
     // console.log(wordObj);
-
+    setOriginalParagraph(question)
     setQuestion(wordObj);
   };
 
@@ -210,15 +233,38 @@ const TypeArea = ({questionNumber}) => {
 
     if (words && words.length >= 1 && questions[words.length - 1]) {
       ques[words.length - 1][1] = "current";
-      ques[words.length - 1][2] = words[words.length - 1];
+
+      if(isAdminMode){
+        const orgWord = ques[words.length - 1][0];
+        const userWord = words[words.length - 1];
+
+        ques[words.length - 1][2] = orgWord.substring(0, userWord?.length ?? 0);
+
+        console.log(orgWord,userWord,ques[words.length - 1][2]);
+        let textAns = "";
+
+        const newArr = ques.slice(0,words.length);
+        for(let index=0 ; index<newArr.length; index++){
+          textAns += ques[index][0] ?? "";
+          textAns += " ";
+        }
+
+        e.target.value = textAns;
+
+        console.log(e.target.value)
+      }else{
+        ques[words.length - 1][2] = words[words.length - 1];
+      }
 
       if (ques[words.length] && ques[words.length][1] === "current") {
         ques[words.length ][1] = "normal";
       }
-      // console.log("called later",ques[words.length - 1])
       setQuestion(ques)
     }
 
+
+    e.target.value = e.target.value.substring(0,originalParagraph.length)
+    console.log(e.target.value)
 
 
     HandlePingCorrect();
