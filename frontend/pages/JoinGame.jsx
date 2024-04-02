@@ -37,7 +37,7 @@ return (
 
 const CountDown = ({ setCompleted }) => {
   const [intervalState, setIntervalState] = useState();
-  const [timer, setTimer] = useState(2);
+  const [timer, setTimer] = useState(10);
   const [start, setStart] = useState(false);
 
   useMemo(() => {
@@ -85,7 +85,7 @@ const TypeArea = ({questionNumber}) => {
 
 
   const [intervalState, setIntervalState] = useState();
-    const [timer, setTimer] = useState(180);
+    const [timer, setTimer] = useState(120);
   const [start, setStart] = useState(false);
 
   let ques = structuredClone(questions);
@@ -492,7 +492,7 @@ const JoinGame = () => {
         <div className="player_holder_parent">
           <span className="heading text-center border-b-2 pb-2 border-amber-400">Players</span>
           <div className="player_holder">
-            {Object.keys(players).map((single, index) => {
+            {[...Object.keys(players)].map((single, index) => {
               return (
                   <div className="name_Wrapper border-b-2 border-gray-700 py-2" key={`players_name_${index+1}`}>
                     <span key={`player_${index}`}>{players[single].Name}</span>

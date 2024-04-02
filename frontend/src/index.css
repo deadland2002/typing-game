@@ -231,8 +231,9 @@ body {
       flex-direction: column;
       border: 2px solid rgb(128, 128, 128);
       border-radius: 10px;
-      min-height: 85vh;
-      min-width: 150px;
+      height: 92vh;
+      min-width: 200px;
+      overflow: auto;
       .heading{
         font-size: 20px;
         font-weight: 700;
@@ -345,4 +346,8 @@ body {
       }
     }
   }
+}
+
+.player_holder_parent::-webkit-scrollbar{
+  display: none;
 }
