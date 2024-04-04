@@ -13,7 +13,7 @@ const Home = () => {
           <span>select game mode to begin </span>
         </div>
         <div>
-          <Link to={"/singlePlayer"}>Single player</Link>
+          {/*<Link to={"/singlePlayer"}>Single player</Link>*/}
           <Link to={"/multiPlayer"}>Multi player</Link>
         </div>
       </div>

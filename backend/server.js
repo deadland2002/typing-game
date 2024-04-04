@@ -108,6 +108,11 @@ try{
 
     socket.on("room create",async (args)=>{
       const {roomId,name} = args;
+      if(rooms[roomId]){
+        HandleJoinRoom(socket.id , roomId , name)
+        return
+      }
+
       HandleCreateRoom(socket.id , roomId , name)
       console.log("room-create",args)
     })
@@ -146,7 +151,7 @@ try{
     });
 
 
-    socket.on("Start Game",(args)=>{
+    socket.on("Start Game",(time)=>{
       if(!directory[socket.id])
         return;
 
@@ -162,18 +167,22 @@ try{
         return;
       }
 
-      let max = 14;
-      let randomNumber;
-      const random = Math.random();
-      const scaledRandom = random * (max - 0 + 1);
-      randomNumber = Math.floor(scaledRandom) + 0;
+      let totalPara = 6;
+      let randomQuestionIndex = Math.min(Math.floor(Math.random() * totalPara) , totalPara - 1);
 
-      io.to("room_"+directory[socket.id].room).emit("begin game",randomNumber)
+      // console.log(rooms[roomId].Players)
+
+      for(let key of Object.keys(rooms[roomId].Players))
+        rooms[roomId].Players[key].Points = 0;
+
+      io.to("room_"+directory[socket.id].room).emit("begin game",randomQuestionIndex,time)
     })
 
 
 
     socket.on("Game Over",(args)=>{
+      if(!directory[socket.id])
+        return;
       console.log("pinged backend over")
       let room_id = directory[socket.id].room;
       let player_list = structuredClone(rooms[room_id].Players);
@@ -184,6 +193,8 @@ try{
 
 
     socket.on("correct answers",(score)=>{
+      if(!directory[socket.id])
+        return;
       console.log("pinged backend score")
       let room_id = directory[socket.id].room;
       rooms[room_id].Players[socket.id].Points = score;

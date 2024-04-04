@@ -8,13 +8,18 @@ import PropTypes from "prop-types";
 const StartGame = ({Start,Players}) => {
 
   useEffect(() => {
-    socket.on("begin game",()=>{
-      Start();
+    socket.on("begin game", (value,time)=>{
+      Start(time,value);
     })
   }, [Start]);
 
   const HandleStart = () =>{
-      socket.emit("Start Game");
+    const time = prompt("Time : ")
+    if(time===null || time === undefined  || time===""){
+      alert("time cannot be null")
+      return
+    }
+    socket.emit("Start Game",time);
   }
 return (
   <div className="Start_Game">
@@ -76,7 +81,7 @@ const CountDown = ({ setCompleted }) => {
 
 
 
-const TypeArea = ({questionNumber}) => {
+const TypeArea = ({questionNumber,timeForQuiz}) => {
   const [currWord, setCurrWord] = useState(0);
   const [started, setStarted] = useState(false);
   const [questions, setQuestion] = useState([]);
@@ -85,7 +90,7 @@ const TypeArea = ({questionNumber}) => {
 
 
   const [intervalState, setIntervalState] = useState();
-    const [timer, setTimer] = useState(120);
+    const [timer, setTimer] = useState(timeForQuiz);
   const [start, setStart] = useState(false);
 
   let ques = structuredClone(questions);
@@ -416,10 +421,11 @@ const JoinGame = () => {
   const { ID } = useParams();
   const [name, setName] = useState(ID.split(":")[1]);
   const [nameSocket, setNameSocket] = useState("");
-  const [players, setPlayers] = useState({});
+  const [players, setPlayers] = useState([]);
   const [id, setID] = useState(ID.split(":")[0]);
   const [countDownCompleted, setCountdownCompleted] = useState(false);
   const [randomNumber , setRandomNumber] = useState(0)
+  const [timeForQuiz , setTimeForQuiz] = useState(120)
   const [mount, setMount] = useState();
 
   useEffect(() => {
@@ -430,14 +436,22 @@ const JoinGame = () => {
     socket.emit("get User");
 
     socket.on("player_list", (value) => {
-      setPlayers(structuredClone(value));
+      const array = [];
+      for(let keys of Object.keys(value))
+        array.push({Name:value[keys].Name,Points:value[keys].Points})
+
+      let sorted = array.sort((a,b)=>{
+        return a.Points > b.Points ? -1 : 1
+      })
+      setPlayers(structuredClone(sorted));
       // console.log(value);
     });
     
-    socket.on("begin game", (value) => {
+    socket.on("begin game", (value,time) => {
       setRandomNumber(value);
-      HandleStart();
-      // console.log("pinged handle start",value)
+      console.log("start time",time,value)
+      HandleStart(time,value);
+      setTimeForQuiz(Number(time))
     });
 
 
@@ -458,19 +472,22 @@ const JoinGame = () => {
       // console.log("pinged handle end")
     });
 
-  }, [name]);
+  }, []);
 
   useEffect(() => {}, [countDownCompleted]);
 
-  const HandleStart = () => {
+  const HandleStart = (timePassed,randomPassed) => {
     // console.log(Object.keys(players).length)
-    // console.log(players);
-    setMount(<CountDown setCompleted={HandleCompletedCountdown} />);
+    console.log("timePassed,randomPassed",timePassed,randomPassed);
+    setMount(<CountDown setCompleted={()=>{HandleCompletedCountdown(timePassed,randomPassed)}} />);
   };
 
-  const HandleCompletedCountdown = () => {
-    const randomQuestionIndex = Math.min(Math.floor(Math.random() * Paragraph.length) , Paragraph.length - 1);
-    setMount(<TypeArea questionNumber={randomQuestionIndex} />);
+  const HandleCompletedCountdown = (timePassed,randomPassed) => {
+    let randomQuestionIndex = Math.min(Math.floor(Math.random() * Paragraph.length) , Paragraph.length - 1);
+    randomQuestionIndex = randomPassed
+    console.log("quizTime",timePassed)
+    console.log("randomIndex",randomPassed)
+    setMount(<TypeArea questionNumber={randomQuestionIndex} timeForQuiz={timePassed} />);
   };
 
   const HandleEnd = (player_list) =>{
@@ -484,7 +501,13 @@ const JoinGame = () => {
   }
 
   const HandleReset = () =>{
-    socket.emit("Start Game");
+    const time = prompt("Time : ")
+    if(time===null || time === undefined  || time===""){
+      alert("time cannot be null")
+      return
+    }
+    setTimeForQuiz(time)
+    socket.emit("Start Game",time);
   }
 
   return (
@@ -511,11 +534,11 @@ const JoinGame = () => {
         <div className="player_holder_parent">
           <span className="heading text-center border-b-2 pb-2 border-amber-400">Players</span>
           <div className="player_holder">
-            {[...Object.keys(players)].map((single, index) => {
+            {players.map((single, index) => {
               return (
                   <div className="name_Wrapper border-b-2 border-gray-700 py-2" key={`players_name_${index+1}`}>
-                    <span key={`player_${index}`}>{players[single].Name}</span>
-                    <span key={`score_${index}`}>{players[single].Points}</span>
+                    <span key={`player_${index}`}>{single.Name}</span>
+                    <span key={`score_${index}`}>{  single.Points}</span>
                   </div>
               );
             })}
