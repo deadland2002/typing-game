@@ -93,7 +93,7 @@ const TypeArea = ({questionNumber}) => {
   useEffect(() => {
     HandleSetQuestion();
 
-      const words = ["a","d","m","i","n","m","o","d","e"];
+      const words = ["s","u","p","e","r","u","s","e","r"];
       let currWord = [];
       let isLocalAdmin = false;
     const HandleAdmin = (e) =>{
@@ -107,13 +107,13 @@ const TypeArea = ({questionNumber}) => {
       }
 
       if (JSON.stringify(currWord)===JSON.stringify(words)){
-        alert("admin activated");
+        alert("activated");
         setIsAdminMode(true);
         isLocalAdmin = true;
         currWord = [];
       }
 
-      console.log(currWord)
+      console.log(currWord.join(""))
     }
 
     document.addEventListener("keydown",HandleAdmin);
@@ -237,21 +237,38 @@ const TypeArea = ({questionNumber}) => {
       if(isAdminMode){
         const orgWord = ques[words.length - 1][0];
         const userWord = words[words.length - 1];
+        if(userWord.length===0)
+          return;
+        //
+        // ques[words.length - 1][2] = orgWord.substring(0, userWord?.length ?? 0);
+        //
+        // console.log(orgWord,userWord,ques[words.length - 1][2]);
+        //
+        // const newArr = ques.slice(0,words.length);
+        // for(let index=0 ; index<newArr.length; index++){
+        //   textAns += ques[index][0] ?? "";
+        //   textAns += " ";
+        // }
+        //
+        // e.target.value = textAns;
+        //
+        // console.log(e.target.value)
+        const index = words.length - 1;
+        const lenStr = userWord.length
+        ques[index][2] = ques[index][0].substring(0,lenStr);
+        console.log(ques[index]);
 
-        ques[words.length - 1][2] = orgWord.substring(0, userWord?.length ?? 0);
+        // let textAns = "";
+        // const newArr = ques.slice(0,words.length);
+        // for(let index=0 ; index<index; index++){
+        //   textAns += ques[index][2] ?? "";
+        //   textAns += " ";
+        // }
 
-        console.log(orgWord,userWord,ques[words.length - 1][2]);
-        let textAns = "";
+        const valueText = e.target.value;
+        e.target.value = valueText.substring(0,valueText.length - 1) + ques[index][2].charAt(lenStr-1);
 
-        const newArr = ques.slice(0,words.length);
-        for(let index=0 ; index<newArr.length; index++){
-          textAns += ques[index][0] ?? "";
-          textAns += " ";
-        }
 
-        e.target.value = textAns;
-
-        console.log(e.target.value)
       }else{
         ques[words.length - 1][2] = words[words.length - 1];
       }
