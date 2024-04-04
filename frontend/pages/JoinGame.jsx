@@ -204,11 +204,13 @@ const TypeArea = ({questionNumber}) => {
     const { value } = e.target;
 
     setStarted(true);
-    if (!started) {
-      HandleTimer();
+
+    let words = value.split(" ").filter(val=>val.length!==0);
+    if(value.endsWith(" ")){
+      words.push("");
     }
 
-    let words = value.split(" ");
+    e.target.value = e.target.value.replaceAll("  "," ");
 
     // console.log(words)
 
